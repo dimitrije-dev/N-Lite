@@ -9,25 +9,46 @@ import SwiftUI
 
 struct VerticalListView: View {
     @Binding var selectedTab: Int
-    
+        
     var body: some View {
-        VStack {
-            CardComponent(title: "New Log", descrription: "How do you feel today? ", iconImage: "pencil.line")
-                .onTapGesture {
-                    selectedTab = 1  // Switch to Log tab
+        VStack(spacing: 14) {
+            InteractiveCard(
+                title: "New Log",
+                description: "How do you feel today? ",
+                iconImage: "pencil.line",
+                gradientColors: [Color.primaryColorCustom.opacity(0.8), Color.cyan.opacity(0.6)],
+                action: {
+                    selectedTab = 1
                 }
+                
+            )
+        
             
-            CardComponent(title: "Progress", descrription: "See how much you have done", iconImage: "chart.pie.fill")
-                .onTapGesture {
-                    selectedTab = 2  // Switch to Log tab (or create a Progress tab)
-                }
             
-            CardComponent(title: "Settings", descrription: "Change your preferences", iconImage: "gear.circle")
-                .onTapGesture {
-                    selectedTab = 3  // Switch to Settings tab
+            InteractiveCard(
+                title: "Progress",
+                description: "See how much you have done",
+                iconImage: "chart.pie.fill",
+                gradientColors: [Color.secondaryColorCustom.opacity(0.8), Color.cyan.opacity(0.6)],
+                action: {
+                    selectedTab = 2
                 }
+            )
+           
+            
+            
+            InteractiveCard(
+                title: "Settings",
+                description: "Change your preferences",
+                iconImage: "gear.circle",
+                gradientColors: [Color.primaryColorCustom.opacity(0.8), Color.blue.opacity(0.6)],
+                action: {
+                    selectedTab = 3
+                }
+            )
+            
         }
-        .padding()
+        .padding(.horizontal)
     }
 }
 

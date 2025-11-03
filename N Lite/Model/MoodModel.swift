@@ -7,9 +7,17 @@
 
 import Foundation
 
-struct MoodModel : Identifiable{
-    let id = UUID()
+struct MoodModel: Identifiable , Codable {
+    let id : UUID
     let mood: String
     let date: Date
-    let note : String
+    let note: String
+    
+    init(id: UUID = UUID(), mood: String, date: Date = Date(), note: String ) {
+        self.id = id
+        self.mood = mood
+        self.date = date
+        self.note = note
+    }
+    
 }
