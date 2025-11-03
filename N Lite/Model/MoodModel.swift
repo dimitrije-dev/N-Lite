@@ -6,3 +6,10 @@
 //
 
 import Foundation
+
+struct MoodModel : Identifiable{
+    let id = UUID()
+    let mood: String
+    let date: Date
+    let note : String
+}

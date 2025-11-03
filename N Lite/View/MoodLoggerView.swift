@@ -9,7 +9,33 @@ import SwiftUI
 
 struct MoodLoggerView: View {
     var body: some View {
-        Text("MoodLogger")
+        Button(action: { /* do something */ }) {
+            Label("Edit", systemImage: "pencil")
+                .font(.headline)
+                .padding(.horizontal, 18)
+                .padding(.vertical, 10)
+                .background(.secondaryColorCustom)
+                .clipShape(Capsule())
+                .foregroundColor(.textColorCustom)
+            
+            
+        }
+        Button(action: { /* add mood */ }) {
+            Text("Add Mood")
+                .fontWeight(.bold)
+                .frame(width:200)
+                .padding()
+                .background(
+                    LinearGradient(
+                        colors: [.secondaryColorCustom, .green],
+                        startPoint: .leading,
+                        endPoint: .trailing
+                    )
+                )
+                .foregroundColor(.white)
+                .cornerRadius(12)
+        }
+
     }
 }
 
