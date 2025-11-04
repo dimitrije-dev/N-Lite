@@ -27,7 +27,7 @@ struct HomeView: View {
                 
                 quoteCard
                     .padding(.horizontal)
-                    .padding(.top, -20)
+                    .padding(.top, -30)
                 
                 
                 
@@ -122,7 +122,7 @@ struct HomeView: View {
         .background(
             RoundedRectangle(cornerRadius: 20, style: .continuous)
                 .fill(.ultraThinMaterial)
-                .shadow(color: Color.black.opacity(0.08), radius: 10, x: 0, y: 5)
+                .shadow(color: Color.black.opacity(0.09), radius: 10, x: 0, y: 5)
         )
         .opacity(animateQuote ? 1 : 0)
         .offset(y: animateQuote ? 0 : 20)

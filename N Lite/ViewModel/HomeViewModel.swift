@@ -36,11 +36,11 @@ import Foundation
         let hour = Calendar.current.component(.hour, from: Date())
         
         switch hour{
-        case 0..<12:
+        case 4..<12:
             greeting = "Good Morning 🌅"
         case 12..<17:
             greeting = "Good Afternoon ☀️"
-        case 17..<21:
+        case 17..<22:
             greeting = "Good Evening 🌆 "
         default:
             greeting = "Good Night 🌙"
