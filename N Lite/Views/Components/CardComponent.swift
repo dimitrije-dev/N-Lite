@@ -26,6 +26,8 @@ struct CardComponent: View {
             }
             
             
+            
+            
             VStack(alignment: .leading, spacing: 4){
                 Text(title)
                     .font(.system(size:22, weight: .semibold , design: .rounded))
