@@ -99,7 +99,7 @@ import SwiftUI
         var distribution: [String : Int] = [:]
         
         for entry in moodEntries {
-            distribution[entry.mood ,default : 0] += 1
+            distribution[entry.mood, default: 0] += 1
         }
         
         return distribution.map { (mood: $0.key, count: $0.value) }
@@ -129,30 +129,24 @@ import SwiftUI
         getTodaysMood() != nil
     }
     
-    var currentStreak : Int {
-        guard !moodEntries.isEmpty else {return 0}
+    var currentStreak: Int {
+        guard !moodEntries.isEmpty else { return 0 }
         
-        let sortedEntries = moodEntries.sorted{$0.date > $1.date}
+        let sortedEntries = moodEntries.sorted { $0.date > $1.date }
         let calendar = Calendar.current
         var streak = 0
-        var checkDate = Date()
+        var expectedDate = Date()
         
         for entry in sortedEntries {
-            if calendar.isDate(entry.date, inSameDayAs: checkDate) {
+            if calendar.isDate(entry.date, inSameDayAs: expectedDate) {
                 streak += 1
-                checkDate = calendar.date(byAdding: .day, value: -1, to: checkDate)!
-            } else if calendar.isDate(entry.date, inSameDayAs: calendar.date(byAdding: .day, value: -1, to: checkDate)!) {
-                checkDate = calendar.date(byAdding: .day, value: -1, to: checkDate)!
-                streak += 1
-                checkDate = calendar.date(byAdding: .day, value: -1, to: checkDate)!
+                expectedDate = calendar.date(byAdding: .day, value: -1, to: expectedDate)!
             } else {
                 break
             }
         }
-        
         return streak
     }
-    
     
     
     

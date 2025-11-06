@@ -1,5 +1,5 @@
 //
-//  HomeVIew.swift
+//  HomeView.swift
 //  N Lite
 //
 //  Created by Dimitrije Milenkovic on 3. 11. 2025..
@@ -17,140 +17,63 @@ struct HomeView: View {
     @State private var animateCards = false
     
     var body: some View {
-        
-        
-        
         ZStack {
-            Color.backgroundColorCustom.edgesIgnoringSafeArea(.all)
-            ScrollView{
-                
-                VStack(spacing: 0){
+            // Background color extends everywhere
+            Color.backgroundColorCustom
+                .ignoresSafeArea(edges: .all)
+            
+            ScrollView {
+                VStack(spacing: 0) {
+                    // Header - extends behind notch/Dynamic Island
+                    HomeHeaderView(
+                        greeting: homeViewModel.greeting,
+                        isAnimated: animateGreeting
+                    )
                     
+                    // Quote Card - positioned to overlap header
+                    QuoteCardView(
+                        quote: homeViewModel.motivationalQuote,
+                        isAnimated: animateQuote,
+                        onRefresh: { homeViewModel.updateQuote() }
+                    )
+                    .padding(.horizontal)
+                    .padding(.top, -40)
                     
-                    headerSection
+                    // Quick Actions Section
+                    VStack(spacing: 16) {
+                        SectionHeaderView(title: "Quick Actions")
                         
-                    
-                    quoteCard
-                        .padding(.horizontal)
-                        .padding(.top, -30)
-                    
-                    
-                    
-                    VStack(spacing:16){
-                        sectionTitle
                         VerticalListView(selectedTab: $selectedTab)
-                    }.padding(.top, 20)
-                        .opacity(animateCards ? 1 : 0)
-                        .offset(y: animateCards ? 0 : 20)
-                        .animation(.easeOut(duration: 0.6).delay(0.4), value: animateCards)
-                    
-                }
-                
-            }.ignoresSafeArea(edges: .top)
-            
-            .onAppear{
-                withAnimation(.easeOut(duration: 0.8)){
-                    animateGreeting = true
-                }
-                withAnimation(.easeOut(duration: 0.8).delay(0.2)){
-                    animateQuote = true
-                }
-                DispatchQueue.main.asyncAfter(deadline: .now() + 0.4){
-                    animateCards = true
-                }
-            }
-        }
-    }
-    
-    
-    
-    
-    private var headerSection : some View {
-        ZStack{
-            LinearGradient(colors: [
-                Color.primaryColorCustom.opacity(0.9), Color.cyan.opacity(0.4)
-            ],
-                           startPoint: .topLeading,
-                           endPoint: .bottomTrailing
-            )
-            .frame(height: 220)
-            .clipShape(RoundedRectangle(cornerRadius: 35 , style: .continuous))
-            .ignoresSafeArea(edges:.top)
-            
-            VStack(spacing: 8){
-                Text(homeViewModel.greeting)
-                    .font(.system(size: 38, weight: .bold, design: .rounded))
-                    .foregroundStyle(.textColorCustom)
-                    .opacity(animateGreeting ? 1 : 0)
-                    .scaleEffect(animateGreeting ? 1 : 0.8)
-                
-                Text("Welcome back!")
-                    .font(.system(size:18, weight: .medium, design: .rounded))
-                    .foregroundStyle(.textColorCustom.opacity(0.9))
-                    .opacity(animateGreeting ? 1 : 0 )
-            }
-            .padding(.top ,50)
-            
-            
-            
-        }
-    }
-    
-    private var quoteCard: some View {
-        VStack(alignment: .leading, spacing: 12) {
-            HStack {
-                Image(systemName: "quote.opening")
-                    .font(.title2)
-                    .foregroundStyle(Color(.secondaryColorCustom))
-                
-                Spacer()
-                
-                Button(action: {
-                    withAnimation(.spring(response: 0.3, dampingFraction: 0.7)) {
-                        homeViewModel.updateQuote()
                     }
-                }) {
-                    Image(systemName: "arrow.clockwise.circle.fill")
-                        .font(.title2)
-                        .foregroundStyle(Color(.secondaryColorCustom).opacity(0.8))
+                    .padding(.top, 20)
+                    .opacity(animateCards ? 1 : 0)
+                    .offset(y: animateCards ? 0 : 20)
+                    .animation(.easeOut(duration: 0.6).delay(0.4), value: animateCards)
                 }
             }
-            
-            Text(homeViewModel.motivationalQuote)
-                .font(.system(size: 18, weight: .medium, design: .rounded))
-                .foregroundStyle(.primary)
-                .multilineTextAlignment(.leading)
-                .fixedSize(horizontal: false, vertical: true)
-                .transition(.push(from: .bottom).combined(with: .opacity))
-                .id(homeViewModel.motivationalQuote) // Force animation on change
+            .ignoresSafeArea(edges: .top) // ← Allows content to go under notch
         }
-        .padding(20)
-        .background(
-            RoundedRectangle(cornerRadius: 20, style: .continuous)
-                .fill(.ultraThinMaterial)
-                .shadow(color: Color.black.opacity(0.09), radius: 10, x: 0, y: 5)
-        )
-        .opacity(animateQuote ? 1 : 0)
-        .offset(y: animateQuote ? 0 : 20)
+        .onAppear {
+            animateViewComponents()
+        }
     }
     
-    private var sectionTitle: some View {
-        HStack {
-            Text("Quick Actions")
-                .font(.system(size: 22, weight: .semibold, design: .rounded))
-                .foregroundStyle(.primary)
-            
-            Spacer()
+    // MARK: - Private Methods
+    
+    private func animateViewComponents() {
+        withAnimation(.easeOut(duration: 0.8)) {
+            animateGreeting = true
         }
-        .padding(.horizontal)
+        
+        withAnimation(.easeOut(duration: 0.8).delay(0.2)) {
+            animateQuote = true
+        }
+        
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.4) {
+            animateCards = true
+        }
     }
-    
-    
 }
-
-
-
-
 
 #Preview {
     HomeView(selectedTab: .constant(0))
