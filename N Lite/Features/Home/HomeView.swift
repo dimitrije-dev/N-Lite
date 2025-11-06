@@ -17,52 +17,58 @@ struct HomeView: View {
     @State private var animateCards = false
     
     var body: some View {
-        ScrollView{
+        
+        
+        
+        ZStack {
+            Color.backgroundColorCustom.edgesIgnoringSafeArea(.all)
+            ScrollView{
+                
+                VStack(spacing: 0){
+                    
+                    
+                    headerSection
+                        
+                    
+                    quoteCard
+                        .padding(.horizontal)
+                        .padding(.top, -30)
+                    
+                    
+                    
+                    VStack(spacing:16){
+                        sectionTitle
+                        VerticalListView(selectedTab: $selectedTab)
+                    }.padding(.top, 20)
+                        .opacity(animateCards ? 1 : 0)
+                        .offset(y: animateCards ? 0 : 20)
+                        .animation(.easeOut(duration: 0.6).delay(0.4), value: animateCards)
+                    
+                }
+                
+            }.ignoresSafeArea(edges: .top)
             
-            VStack(spacing: 0){
-                
-                
-                headerSection
-                    .padding(.top,40)
-                
-                quoteCard
-                    .padding(.horizontal)
-                    .padding(.top, -30)
-                
-                
-                
-                VStack(spacing:16){
-                    sectionTitle
-                    VerticalListView(selectedTab: $selectedTab)
-                }.padding(.top, 20)
-                .opacity(animateCards ? 1 : 0)
-                .offset(y: animateCards ? 0 : 20)
-                .animation(.easeOut(duration: 0.6).delay(0.4), value: animateCards)
-                
-            }
-           
-        }
-        .ignoresSafeArea(edges: .top)
-        .onAppear{
-            withAnimation(.easeOut(duration: 0.8)){
-                animateGreeting = true
-            }
-            withAnimation(.easeOut(duration: 0.8).delay(0.2)){
-                animateQuote = true
-            }
-            DispatchQueue.main.asyncAfter(deadline: .now() + 0.4){
-                animateCards = true
+            .onAppear{
+                withAnimation(.easeOut(duration: 0.8)){
+                    animateGreeting = true
+                }
+                withAnimation(.easeOut(duration: 0.8).delay(0.2)){
+                    animateQuote = true
+                }
+                DispatchQueue.main.asyncAfter(deadline: .now() + 0.4){
+                    animateCards = true
+                }
             }
         }
     }
     
     
     
+    
     private var headerSection : some View {
         ZStack{
             LinearGradient(colors: [
-                Color(.secondaryColorCustom).opacity(0.9),
-                Color(.secondaryColorCustom).opacity(0.2)
+                Color.primaryColorCustom.opacity(0.9), Color.cyan.opacity(0.4)
             ],
                            startPoint: .topLeading,
                            endPoint: .bottomTrailing
