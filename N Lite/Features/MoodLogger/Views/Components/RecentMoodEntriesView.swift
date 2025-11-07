@@ -6,13 +6,15 @@
 import SwiftUI
 
 struct RecentMoodEntriesView: View {
-    @Bindable var viewModel: MoodViewModel
+    let entries: [MoodModel]
+    let onDelete: (MoodModel) -> Void
+    
     
     var body: some View {
         VStack(alignment: .leading, spacing: 16) {
             header
             
-            if !viewModel.moodEntries.isEmpty {
+            if !entries.isEmpty == false {
                 entriesList
             } else {
                 emptyState
@@ -28,19 +30,15 @@ struct RecentMoodEntriesView: View {
             
             Spacer()
             
-            Text("\(viewModel.moodEntries.count) total")
+            Text("\(entries.count) shown")
                 .font(.system(size: 14, weight: .medium, design: .rounded))
                 .foregroundStyle(.secondary)
         }
     }
     
     private var entriesList: some View {
-        ForEach(viewModel.moodEntries.sorted { $0.date > $1.date }.prefix(3)) { entry in
-            MoodEntryRow(entry: entry) {
-                withAnimation {
-                    viewModel.deleteMoodEntry(entry)
-                }
-            }
+        ForEach(entries ){ entry in
+            MoodEntryRow(entry : entry , onDelete: {onDelete(entry)})
         }
     }
     
@@ -95,6 +93,12 @@ struct MoodEntryRow: View {
 }
 
 #Preview {
-    RecentMoodEntriesView(viewModel: MoodViewModel())
-        .padding()
+    let previewEntries = [
+          MoodModel(mood: "😊", note: "Had a great day!"),
+          MoodModel(mood: "😴", note: "Very tired today"),
+          MoodModel(mood: "🥰", note: "Feeling loved")
+      ]
+      
+      return RecentMoodEntriesView(entries: previewEntries, onDelete: { _ in })
+          .padding()
 }

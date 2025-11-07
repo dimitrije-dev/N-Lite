@@ -6,12 +6,15 @@
 //
 
 import Foundation
+import SwiftData
 
-struct MoodModel: Identifiable , Codable {
-    let id : UUID
-    let mood: String
-    let date: Date
-    let note: String
+
+@Model
+final class MoodModel {
+    var id : UUID
+    var mood: String
+    var date: Date
+    var note: String
     
     init(id: UUID = UUID(), mood: String, date: Date = Date(), note: String ) {
         self.id = id

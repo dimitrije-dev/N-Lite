@@ -4,8 +4,12 @@
 //
 
 import SwiftUI
+import SwiftData
 
 struct MoodLoggerView: View {
+    @Environment(\.modelContext) var modelContext
+    @Query(sort: \MoodModel.date, order: .reverse) private var moodEntries: [MoodModel]
+    
     @State private var moodViewModel = MoodViewModel()
     @State private var showingSaveAlert = false
     @State private var animateMoods = false
@@ -15,7 +19,12 @@ struct MoodLoggerView: View {
     
     var body: some View {
         ZStack {
-            Color.backgroundColorCustom.ignoresSafeArea()
+            // Background with tap gesture to dismiss keyboard
+            Color.backgroundColorCustom
+                .ignoresSafeArea()
+                .onTapGesture {
+                    isNoteFocused = false
+                }
             
             ScrollViewReader { scrollProxy in
                 ScrollView {
@@ -25,9 +34,9 @@ struct MoodLoggerView: View {
                             .padding(.top, 20)
                         
                         // Today's Status Card
-                        if moodViewModel.hasEnteredMoodToday {
+                        if moodViewModel.hasEnteredMoodToday(entries: moodEntries) {
                             TodaysMoodCardView(
-                                todaysMood: moodViewModel.getTodaysMood(),
+                                todaysMood: moodViewModel.getTodaysMood(entries: moodEntries),
                                 moodCategories: moodViewModel.moodCategories
                             )
                             .padding(.horizontal)
@@ -51,10 +60,9 @@ struct MoodLoggerView: View {
                         .padding(.horizontal)
                         .opacity(animateForm ? 1 : 0)
                         .offset(y: animateForm ? 0 : 20)
-                        .id("noteInput") // Add ID for ScrollViewReader
+                        .id("noteInput")
                         .onChange(of: isNoteFocused) { oldValue, newValue in
                             if newValue {
-                                // Scroll to note input when focused with delay for keyboard
                                 DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
                                     withAnimation(.easeInOut(duration: 0.3)) {
                                         scrollProxy.scrollTo("noteInput", anchor: .center)
@@ -72,17 +80,27 @@ struct MoodLoggerView: View {
                         .padding(.bottom, 30)
                         
                         // Recent Entries
-                        RecentMoodEntriesView(viewModel: moodViewModel)
-                            .padding(.horizontal)
-                            .padding(.bottom, 100) // Extra padding for keyboard
+                        RecentMoodEntriesView(
+                            entries: Array(moodEntries.prefix(5)),
+                            onDelete: { entry in
+                                withAnimation {
+                                    moodViewModel.deleteMoodEntry(entry)
+                                }
+                            }
+                        )
+                        .padding(.horizontal)
+                        .padding(.bottom, 100)
                     }
                 }
-                .scrollDismissesKeyboard(.interactively) // iOS 16+ feature
+                .scrollDismissesKeyboard(.interactively)
             }
         }
         .navigationTitle("Mood Logger")
         .navigationBarTitleDisplayMode(.inline)
-        .onAppear(perform: animateViews)
+        .onAppear {
+            moodViewModel.modelContext = modelContext
+            animateViews()
+        }
         .alert("Mood Saved!", isPresented: $showingSaveAlert) {
             Button("OK", role: .cancel) { }
         } message: {
@@ -96,14 +114,6 @@ struct MoodLoggerView: View {
                 }
             }
         }
-        // Handle tap to dismiss keyboard more carefully
-        .onTapGesture {
-            // Only dismiss if tapping outside of text input areas
-            if isNoteFocused {
-                isNoteFocused = false
-            }
-        }
-        
     }
     
     private func animateViews() {
@@ -127,5 +137,6 @@ struct MoodLoggerView: View {
 #Preview {
     NavigationStack {
         MoodLoggerView()
+            .modelContainer(for: MoodModel.self, inMemory: true)
     }
 }
