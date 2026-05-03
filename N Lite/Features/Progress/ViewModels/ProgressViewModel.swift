@@ -47,13 +47,26 @@ import SwiftUI
         
         let sortedEntries = entries.sorted { $0.date > $1.date }
         let calendar = Calendar.current
+        var seenDays = Set<Date>()
+        var uniqueDailyEntries: [MoodModel] = []
+        
+        for entry in sortedEntries {
+            let day = calendar.startOfDay(for: entry.date)
+            if seenDays.insert(day).inserted {
+                uniqueDailyEntries.append(entry)
+            }
+        }
+        
         var streak = 0
         var expectedDate = Date()
         
-        for entry in sortedEntries {
+        for entry in uniqueDailyEntries {
             if calendar.isDate(entry.date, inSameDayAs: expectedDate) {
                 streak += 1
-                expectedDate = calendar.date(byAdding: .day, value: -1, to: expectedDate)!
+                guard let previousDay = calendar.date(byAdding: .day, value: -1, to: expectedDate) else {
+                    break
+                }
+                expectedDate = previousDay
             } else {
                 break
             }

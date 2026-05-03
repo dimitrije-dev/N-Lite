@@ -42,13 +42,10 @@ struct SaveMoodButton: View {
                 x: 0,
                 y: 5
             )
-            .disabled(!isEnabled)
             .scaleEffect(isEnabled ? 1.0 : 0.95)
             .animation(.spring(response: 0.3), value: isEnabled)
-            
-            
-            
         }
+        .disabled(!isEnabled)
         
     }
 }

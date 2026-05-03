@@ -34,6 +34,7 @@ import SwiftData
     
     
     var modelContext : ModelContext?
+    var lastSaveError: String?
     
     init(modelContext : ModelContext? = nil){
         self.modelContext = modelContext
@@ -41,25 +42,32 @@ import SwiftData
     
     
   
-    func saveMoodEntry (){
-        guard !selectedMood.isEmpty , let context = modelContext else {
-            return
+    @discardableResult
+    func saveMoodEntry() -> Bool {
+        guard !selectedMood.isEmpty, let context = modelContext else {
+            lastSaveError = "Unable to save mood right now."
+            return false
         }
         
+        let trimmedNote = moodNote.trimmingCharacters(in: .whitespacesAndNewlines)
+        
         let newEntry = MoodModel(
-            mood : selectedMood,
-            note: moodNote.isEmpty ? "No note" : moodNote
+            mood: selectedMood,
+            note: trimmedNote
         )
         
         context.insert(newEntry)
-        
-        
-        try? context.save()
-        
-        
-        selectedMood = ""
-        moodNote = ""
-        
+        do {
+            try context.save()
+            selectedMood = ""
+            moodNote = ""
+            lastSaveError = nil
+            return true
+        } catch {
+            context.delete(newEntry)
+            lastSaveError = "Failed to save mood. Please try again."
+            return false
+        }
     }
     
     func deleteMoodEntry(_ entry: MoodModel) {
@@ -67,7 +75,11 @@ import SwiftData
             return
         }
         context.delete(entry)
-        try? context.save()
+        do {
+            try context.save()
+        } catch {
+            lastSaveError = "Failed to delete mood entry."
+        }
     }
     
     
@@ -94,7 +106,9 @@ import SwiftData
     }
     
     func getLastSevenDaysMoods(entries:[MoodModel]) -> [MoodModel] {
-        let sevenDaysAgo = Calendar.current.date(byAdding: .day , value: -7, to : Date())!
+        guard let sevenDaysAgo = Calendar.current.date(byAdding: .day, value: -7, to: Date()) else {
+            return entries.sorted { $0.date > $1.date }
+        }
         
         return entries.filter {$0.date >= sevenDaysAgo}
             .sorted{$0.date > $1.date}
@@ -118,13 +132,26 @@ import SwiftData
             
             let sortedEntries = entries.sorted { $0.date > $1.date }
             let calendar = Calendar.current
+            var seenDays = Set<Date>()
+            var uniqueDailyEntries: [MoodModel] = []
+            
+            for entry in sortedEntries {
+                let day = calendar.startOfDay(for: entry.date)
+                if seenDays.insert(day).inserted {
+                    uniqueDailyEntries.append(entry)
+                }
+            }
+            
             var streak = 0
             var expectedDate = Date()
             
-            for entry in sortedEntries {
+            for entry in uniqueDailyEntries {
                 if calendar.isDate(entry.date, inSameDayAs: expectedDate) {
                     streak += 1
-                    expectedDate = calendar.date(byAdding: .day, value: -1, to: expectedDate)!
+                    guard let previousDay = calendar.date(byAdding: .day, value: -1, to: expectedDate) else {
+                        break
+                    }
+                    expectedDate = previousDay
                 } else {
                     break
                 }

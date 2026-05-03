@@ -14,7 +14,7 @@ struct RecentMoodEntriesView: View {
         VStack(alignment: .leading, spacing: 16) {
             header
             
-            if !entries.isEmpty == false {
+            if !entries.isEmpty {
                 entriesList
             } else {
                 emptyState
@@ -66,7 +66,8 @@ struct MoodEntryRow: View {
                 .frame(width: 40)
             
             VStack(alignment: .leading, spacing: 4) {
-                Text(entry.note)
+                let trimmedNote = entry.note.trimmingCharacters(in: .whitespacesAndNewlines)
+                Text(trimmedNote.isEmpty ? "No note added" : trimmedNote)
                     .font(.system(size: 14, weight: .medium, design: .rounded))
                     .foregroundStyle(.primary)
                     .lineLimit(2)

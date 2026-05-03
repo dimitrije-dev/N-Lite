@@ -45,10 +45,13 @@ struct TodaysMoodCardView: View {
                 Text(moodCategories[mood.mood] ?? "")
                     .font(.system(size: 14, weight: .semibold, design: .rounded))
                     .foregroundStyle(.primary)
-                Text(mood.note)
-                    .font(.system(size: 12, weight: .regular, design: .rounded))
-                    .foregroundStyle(.secondary)
-                    .lineLimit(2)
+                let trimmedNote = mood.note.trimmingCharacters(in: .whitespacesAndNewlines)
+                if !trimmedNote.isEmpty {
+                    Text(trimmedNote)
+                        .font(.system(size: 12, weight: .regular, design: .rounded))
+                        .foregroundStyle(.secondary)
+                        .lineLimit(2)
+                }
                 
             }
             Spacer()

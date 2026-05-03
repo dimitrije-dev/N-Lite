@@ -7,11 +7,43 @@ import SwiftUI
 import SwiftData
 
 struct MoodLoggerView: View {
+    private enum SaveAlertState: Identifiable {
+        case success
+        case failure(String)
+        
+        var id: String {
+            switch self {
+            case .success:
+                return "success"
+            case .failure(let message):
+                return "failure-\(message)"
+            }
+        }
+        
+        var title: String {
+            switch self {
+            case .success:
+                return "Mood Saved!"
+            case .failure:
+                return "Save Failed"
+            }
+        }
+        
+        var message: String {
+            switch self {
+            case .success:
+                return "Your mood has been logged successfully!"
+            case .failure(let message):
+                return message
+            }
+        }
+    }
+    
     @Environment(\.modelContext) var modelContext
     @Query(sort: \MoodModel.date, order: .reverse) private var moodEntries: [MoodModel]
     
     @State private var moodViewModel = MoodViewModel()
-    @State private var showingSaveAlert = false
+    @State private var saveAlertState: SaveAlertState?
     @State private var animateMoods = false
     @State private var animateForm = false
     
@@ -101,10 +133,12 @@ struct MoodLoggerView: View {
             moodViewModel.modelContext = modelContext
             animateViews()
         }
-        .alert("Mood Saved!", isPresented: $showingSaveAlert) {
-            Button("OK", role: .cancel) { }
-        } message: {
-            Text("Your mood has been logged successfully!")
+        .alert(item: $saveAlertState) { state in
+            Alert(
+                title: Text(state.title),
+                message: Text(state.message),
+                dismissButton: .cancel(Text("OK"))
+            )
         }
         .toolbar {
             ToolbarItemGroup(placement: .keyboard) {
@@ -127,8 +161,11 @@ struct MoodLoggerView: View {
     
     private func saveMood() {
         withAnimation(.spring(response: 0.4, dampingFraction: 0.8)) {
-            moodViewModel.saveMoodEntry()
-            showingSaveAlert = true
+            if moodViewModel.saveMoodEntry() {
+                saveAlertState = .success
+            } else {
+                saveAlertState = .failure(moodViewModel.lastSaveError ?? "Failed to save mood.")
+            }
             isNoteFocused = false
         }
     }

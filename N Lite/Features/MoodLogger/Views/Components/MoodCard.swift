@@ -51,8 +51,9 @@ struct MoodCard: View {
                     )
             }
             
-            if !entry.mood.isEmpty && entry.note != "No note"{
-                Text(entry.note)
+            let trimmedNote = entry.note.trimmingCharacters(in: .whitespacesAndNewlines)
+            if !entry.mood.isEmpty && !trimmedNote.isEmpty {
+                Text(trimmedNote)
                     .font(Font.system(size: 14, weight: .regular, design: .rounded))
                     .foregroundStyle(.primary.opacity(0.9))
                     .lineLimit(3)
@@ -134,4 +135,3 @@ struct MoodCard: View {
     )
     )
 }
-
