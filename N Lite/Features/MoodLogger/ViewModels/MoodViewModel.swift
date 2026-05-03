@@ -93,14 +93,8 @@ import SwiftData
     }
  
     func getMoodDistribution(entries: [MoodModel]) -> [(mood : String , count : Int)]{
-        var distribution: [String : Int] = [:]
-        
-        for entry in entries {
-            distribution[entry.mood, default: 0] += 1
-        }
-        
-        return distribution.map { (mood: $0.key, count: $0.value) }
-            .sorted { $0.count > $1.count }
+        MoodAnalytics.moodDistribution(entries: entries)
+            .map { (mood: $0.mood, count: $0.count) }
         
         
     }
@@ -128,35 +122,7 @@ import SwiftData
   
     
     func getCurrentStreak(entries: [MoodModel]) -> Int {
-            guard !entries.isEmpty else { return 0 }
-            
-            let sortedEntries = entries.sorted { $0.date > $1.date }
-            let calendar = Calendar.current
-            var seenDays = Set<Date>()
-            var uniqueDailyEntries: [MoodModel] = []
-            
-            for entry in sortedEntries {
-                let day = calendar.startOfDay(for: entry.date)
-                if seenDays.insert(day).inserted {
-                    uniqueDailyEntries.append(entry)
-                }
-            }
-            
-            var streak = 0
-            var expectedDate = Date()
-            
-            for entry in uniqueDailyEntries {
-                if calendar.isDate(entry.date, inSameDayAs: expectedDate) {
-                    streak += 1
-                    guard let previousDay = calendar.date(byAdding: .day, value: -1, to: expectedDate) else {
-                        break
-                    }
-                    expectedDate = previousDay
-                } else {
-                    break
-                }
-            }
-            return streak
+            MoodAnalytics.currentStreak(entries: entries)
         }
     
 }

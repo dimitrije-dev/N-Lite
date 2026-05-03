@@ -14,7 +14,7 @@ struct VerticalListView: View {
         VStack(spacing: 14) {
             InteractiveCard(
                 title: "New Log",
-                description: "How do you feel today? ",
+                description: "Capture today's mood in under 10 seconds",
                 iconImage: "pencil.line",
                 gradientColors: [Color.primaryColorCustom.opacity(0.8), Color.cyan.opacity(0.6)],
                 action: {
@@ -27,7 +27,7 @@ struct VerticalListView: View {
             
             InteractiveCard(
                 title: "Progress",
-                description: "See how much you have done",
+                description: "Review trends, consistency, and mood balance",
                 iconImage: "chart.pie.fill",
                 gradientColors: [Color.secondaryColorCustom.opacity(0.8), Color.cyan.opacity(0.6)],
                 action: {
@@ -39,7 +39,7 @@ struct VerticalListView: View {
             
             InteractiveCard(
                 title: "Settings",
-                description: "Change your preferences",
+                description: "Manage reminders, privacy, and app preferences",
                 iconImage: "gear.circle",
                 gradientColors: [Color.primaryColorCustom.opacity(0.8), Color.blue.opacity(0.6)],
                 action: {

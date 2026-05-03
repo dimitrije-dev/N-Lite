@@ -49,6 +49,19 @@ struct ProgressView: View {
                             .opacity(animateCharts ? 1 : 0)
                             .offset(y: animateCharts ? 0 : 20)
                         
+                        MoodTrendChart(points: viewModel.getTrendData(entries: moodEntries, days: 14))
+                            .padding(.horizontal)
+                            .opacity(animateCharts ? 1 : 0)
+                            .offset(y: animateCharts ? 0 : 20)
+                        
+                        MoodConsistencyHeatmap(
+                            score: viewModel.getConsistencyScore(entries: moodEntries, days: 28),
+                            days: viewModel.getHeatmapData(entries: moodEntries, days: 28)
+                        )
+                        .padding(.horizontal)
+                        .opacity(animateCharts ? 1 : 0)
+                        .offset(y: animateCharts ? 0 : 20)
+                        
                         // Mood Distribution
                         MoodDistributionChart(
                             distribution: viewModel.getMoodDistribution(entries: moodEntries),
@@ -153,6 +166,12 @@ struct ProgressView: View {
                     icon: "clock.fill",
                     title: "Tracking Since",
                     value: viewModel.getTimeRange(entries: moodEntries)
+                )
+                
+                insightRow(
+                    icon: "waveform.path.ecg",
+                    title: "Mood Balance",
+                    value: viewModel.getMoodBalanceSummary(entries: moodEntries)
                 )
             }
         }

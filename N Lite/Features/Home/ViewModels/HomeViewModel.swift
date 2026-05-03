@@ -12,6 +12,8 @@ import Foundation
 @Observable class HomeViewModel {
     
     var greeting : String = ""
+    var subGreeting: String = ""
+    var dateLabel: String = ""
     var motivationalQuote: String = ""
     
     private var quotes = [
@@ -26,6 +28,7 @@ import Foundation
     ]
     init(){
         updateGreeting()
+        updateDateLabel()
         updateQuote()
         
         
@@ -37,16 +40,25 @@ import Foundation
         
         switch hour{
         case 4..<12:
-            greeting = "Good Morning 🌅"
+            greeting = "Good morning"
+            subGreeting = "A calm start builds momentum for the whole day."
         case 12..<17:
-            greeting = "Good Afternoon ☀️"
+            greeting = "Good afternoon"
+            subGreeting = "A short check-in can reset your focus."
         case 17..<22:
-            greeting = "Good Evening 🌆 "
+            greeting = "Good evening"
+            subGreeting = "Reflect on today and close the day with clarity."
         default:
-            greeting = "Good Night 🌙"
+            greeting = "Good night"
+            subGreeting = "Capture your mood before you rest."
             
         }
     }
+    
+    func updateDateLabel() {
+        dateLabel = Date().formatted(.dateTime.weekday(.wide).day().month(.wide))
+    }
+    
     func updateQuote(){
         motivationalQuote = quotes.randomElement() ?? quotes[0]
     }
